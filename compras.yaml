@@ -1,0 +1,5876 @@
+openapi: 3.0.0
+info:
+  title: Workflow-Suppliers
+  version: 0.1.6
+  description: Phase 1 about workflow for Suplliers
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  contact:
+    name: yo
+    email: caser@com.com
+    url: 'http://localhost:8080'
+servers:
+  - url: 'http://localhost:8080'
+security:
+  - Authentication: []
+tags:
+  - name: Users
+    description: Users
+  - name: Roles
+    description: Roles
+  - name: UsersRoles
+    description: Users Roles
+  - name: Menus
+    description: Menus
+  - name: Actions
+    description: Actions
+  - name: Companies
+    description: Companies
+  - name: PyramidsCompany
+    description: Pyramids-Company
+  - name: Accounts
+    description: Accounts
+  - name: BankAccounts
+    description: BankAccounts
+  - name: Agents
+    description: Agents
+  - name: Auxiliaries
+    description: auxiliaries
+  - name: Channels
+    description: Channels
+  - name: Wallets
+    description: Wallets
+  - name: Mediators
+    description: Mediators
+  - name: Products
+    description: Products
+  - name:  DepartmentsCompanies
+    description: Departments by Company
+  - name: Departments
+    description: Departments
+  - name: DepartmentSubstitutes
+    description: Substitutes By Department
+  - name: Intercos
+    description: Intercos
+  - name: CommercialPGIs
+    description: Commercial PGIs
+  - name: PgiCommercial
+    description: PGI Commercial
+  - name: Ppms
+    description: Proposal for payment to mediator
+  - name: Suppliers
+    description: Suppliers
+  - name: Applicants
+    description: Applicants
+  - name: Announcement
+    description: Announcement
+  - name: Taxes
+    description: Taxes(VAT)
+  - name: Estates
+    description: Estates
+  - name: Operations
+    description: Operations
+  - name: Settings
+    description: Settings
+  - name: Concepts
+    description: Concepts
+  - name: Ulobs
+    description: Ulobs
+  - name: Budgets
+    description: Budgets
+  - name: AccountingPlans
+    description: Accounting Plans
+  - name: Signatures
+    description: Signatures
+  - name: Permisssions
+    description: Permisssions
+  - name: Meta4
+    description: Meta4
+paths:
+  /users:
+    get:
+      summary: Search Users
+      tags:
+        - Users
+      operationId: get-user-search
+      description: Search for users by criteria. Returns a list about users.
+      parameters:
+        - in: query
+          name: name
+          description: Users Name
+          schema:
+            type: string
+          example: Juan Perez
+        - name: userId
+          in: query
+          description: Users Identifier
+          schema:
+            type: string
+            maxLength: 50
+          example: "UISMCB"
+        - in: query
+          name: roleId
+          description: Role unique Identifier
+          schema:
+            type: string
+          example: TEST
+        - name: status
+          in: query
+          required: true
+          description: Indicate if User is active or not. If selected ACTIVE option return only user actives, but if selected INACTIVE, return all users (actives and inactives)
+          schema:
+            type: string
+            enum: ['ACTIVE', 'INACTIVE']
+          example: 'ACTIVE'
+            
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    post:
+      summary: Create 
+      tags:
+        - Users
+      operationId: post-user
+      description: Create User and Rol.
+      requestBody:
+        $ref: '#/components/requestBodies/UserRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be completed due to a conflict with the current state of the target resource.
+                errorCode: '409'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  '/users/{userId}':
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    get:
+      summary: Get User By Id
+      description: Search for users by id
+      tags:
+        - Users
+      operationId: get-user-search-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The requested resource could not be found but may be available again in the future.
+                errorCode: '404'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    put:
+      summary: Update User
+      tags:
+        - Users
+      operationId: put-user
+      description: Update user
+      requestBody:
+        $ref: '#/components/requestBodies/UserUpdateRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The requested resource could not be found but may be available again in the future.
+                errorCode: '404'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be completed due to a conflict with the current state of the target resource.
+                errorCode: '409'
+        
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /users/{userId}/status:
+    patch:
+      summary: Patch User
+      description: Update status user
+      tags:
+        - Users
+      operationId: parcial-update-user
+      parameters:
+      - $ref: '#/components/parameters/UserId'
+      requestBody:
+        $ref: '#/components/requestBodies/Status'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The requested resource could not be found but may be available again in the future.
+                errorCode: '404'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /roles:
+    get:
+      summary: Search a List of roles
+      tags:
+        - Roles
+      operationId: get-rol-search
+      description: Search Roles and Description
+      parameters: 
+        - in: query
+          name: description
+          description: Role description
+          schema:
+            type: string
+          example: TEST USUARIO
+        - name: roleId
+          in: query
+          description: Role unique Identifier
+          schema:
+            type: string
+          example: "TEST"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'          
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    post:
+      summary: Create Rol
+      operationId: post-rol
+      description: Create rol
+      tags:
+        - Roles
+      requestBody:
+        $ref: '#/components/requestBodies/RolRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The requested resource could not be found but may be available again in the future.
+                errorCode: '404'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /roles/{roleId}:
+    parameters:
+      - schema:
+          type: string
+          example: 'TEST'
+        name: roleId
+        in: path
+        required: true
+        description: Role unique Identifier
+    put:
+      summary: Update Rol
+      tags:
+        - Roles
+      operationId: put-rol
+      description: Delete Rol
+      requestBody:
+        $ref: '#/components/requestBodies/RoleUpdateRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The requested resource could not be found but may be available again in the future.
+                errorCode: '404'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    delete:
+      summary: Delete Rol
+      description: Delete a role by identifier
+      tags:
+        - Roles
+      operationId: delete-rol
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The requested resource could not be found but may be available again in the future.
+                errorCode: '404'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  '/roles/{roleId}/details':
+    parameters:
+      - schema:
+          type: string
+        name: roleId
+        in: path
+        required: true
+        description: Role unique Identifier
+    get:
+      summary: Search Rol details by Identifier
+      tags:
+        - Roles
+      operationId: get-rol-search-id
+      description: Search for roles by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/RolExtendedResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /users/{userId}/roles/{roleId}:
+    get:
+      summary: Search Users Roles
+      tags:
+        - UsersRoles
+      operationId: get-user-rol-byId
+      description: Search for users by criteria. Returns a list about users.
+      parameters:
+        - in: path
+          name: userId
+          description: users Identifier
+          required: true
+          schema:
+            type: string
+          example: UISMBC
+        - in: path
+          name: roleId
+          description: Role unique Identifier
+          required: true
+          schema:
+            type: string
+          example: TEST
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RolExtendedResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /menus:
+    get:
+     description: Return all Menus
+     summary: return Menus
+     tags:
+      - Menus
+     operationId: get-menus
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /actions:
+    get:
+     description: Return all Actions
+     summary: return Actions
+     tags:
+      - Actions
+     operationId: get-action
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActionResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /companies:
+    get:
+     description: Return all companies. If filtered by companyId or by name, it only returns the company of the selected one.
+     summary: Return all companies
+     tags:
+      - Companies
+     operationId: get-companies
+     parameters: 
+        - in: query
+          name: companyName
+          description: companies name
+          schema:
+            type: string
+          example: 'BANCO GALLEGO V y P'
+        - name: companyId
+          in: query
+          description: companies Identifier
+          schema:
+            type: string
+            maxLength: 4
+          example: "0026"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Companies'   
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /companies/details:
+    get:
+     description: Return company details with filters
+     summary: Return all companies details
+     tags:
+      - Companies
+     operationId: get-companies-details
+     parameters: 
+        - in: query
+          name: companyName
+          description: companies name
+          schema:
+            type: string
+          example: 'BANCO GALLEGO V y P'
+        - name: companyId
+          in: query
+          description: companies Identifier
+          schema:
+            type: string
+            maxLength: 4
+          example: "0026"
+        - name: status
+          in: query
+          description: companies status. If selected inactived , should be return companies inactives and actives
+          schema:
+            type: string
+            enum: ["ACTIVE", "INACTIVE"]
+          example: "ACTIVE"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                 type: array
+                 items:
+                    $ref: '#/components/schemas/CompaniesDetails'
+               
+       
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /companies/{companyId}/details:
+    get:
+     description: Return company details filter by Id
+     summary: Return companY details filter by Id
+     tags:
+      - Companies
+     operationId: get-companies-by-id
+     parameters: 
+        - name: companyId
+          in: path
+          required: true
+          description: companies Identifier
+          schema:
+            type: string
+            maxLength: 4
+          example: "0026"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompaniesDetailsById'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'              
+  /companies/{companyId}/status:
+    patch:
+     description: Update Company Status
+     summary: Modifiying Company Status
+     tags:
+      - Companies
+     operationId: update-companies-status
+     parameters: 
+        - in: path
+          name: companyId
+          description: company identifier
+          required: true
+          schema:
+            type: string
+            maxLength: 4
+          example: "0026"
+     requestBody:
+        content:
+          application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    enum: ["ACTIVE", "INACTIVE"]
+                    example: "ACTIVE"
+     responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The requested resource could not be found but may be available again in the future.
+                errorCode: '404'
+       
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /companies/{companyId}:
+    put:
+     description: Update Company 
+     summary: Update companies
+     tags:
+      - Companies
+     operationId: update-companies
+     parameters: 
+        - in: path
+          name: companyId
+          description: company identifier
+          required: true
+          schema:
+            type: string
+            maxLength: 4
+          example: "0026"
+     requestBody:
+       $ref: '#/components/requestBodies/CompanyRQ'
+     responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The requested resource could not be found but may be available again in the future.
+                errorCode: '404'
+       
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /companies/channels:
+    get:
+     description: Return Channels by Company 
+     summary: Return Channels Company 
+     tags:
+      - Companies
+     operationId: get-companies-channels
+     parameters: 
+        - in: query
+          name: companyId
+          description: company identifier
+          schema:
+            type: string
+            maxLength: 4
+          example: "0026"
+        - name: channelId
+          in: query
+          description: channel identifier
+          schema:
+            type: string
+            maxLength: 10
+          example: "AG"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CompaniesChannels'      
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    post:
+     description: Create relation Channels by Company 
+     summary: Create relation Channels Company 
+     tags:
+      - Companies
+     operationId: post-companies-channels
+     requestBody:
+       $ref: '#/components/requestBodies/ChannelsComapnyRQ' 
+     responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorCode: '400'
+                errorMessage: The request could not be understood by the server due malformed sintax.
+        '409':
+           description: Conflict  
+           content:
+             application/json:
+               example:
+                 errorMessage: The request could not be completed due to a conflict with the current state of the target resource.
+                 errorCode: "409"
+               schema:
+                 $ref: '#/components/schemas/ErrorData'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /companies/{companyId}/channels/{channelId}:
+    delete:
+     description: delete Channels by Company 
+     summary: delete relation Channels Company 
+     tags:
+      - Companies
+     operationId: delete-companies-channels
+     parameters: 
+        - in: path
+          name: companyId
+          description: company identifier
+          required: true
+          schema:
+            type: string
+            maxLength: 4
+          example: "0026"
+        - name: channelId
+          in: path
+          description: channel identifier
+          required: true
+          schema:
+            type: string
+            maxLength: 10
+          example: "AG"
+     responses:
+        '204':
+          description: No Content
+        
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+   
+  /accounts:
+    get:
+     description: Return all accounts. If filtered by accountId or by name, it only returns the account of the selected one.
+     summary: Return all accounts
+     tags:
+      - Accounts
+     operationId: get-accounts
+     parameters: 
+        - in: query
+          name: name
+          description: accounts name
+          schema:
+            type: string
+          example: 'CAPITAL SOCIAL'
+        - name: accountId
+          in: query
+          description: account Identifier
+          schema:
+            type: string
+            maxLength: 10
+          example: "10000000"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Accounts'
+    
+  /accounts/{accountId}:
+    put:
+     description: Update accounts. Only flags can be modified to true or false
+     summary: Update  accounts. Only flags can be modified to true or false
+     tags:
+      - Accounts
+     operationId: update-accounts
+     parameters: 
+        - in: path
+          name: accountId
+          description: Accounts identifier
+          required: true
+          schema:
+            type: string
+          example: '10000000'
+     requestBody:
+       $ref: '#/components/requestBodies/AccountRQDetail'
+     responses:
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /accounts/details:
+    get:
+     description: Create accounts details 
+     summary: Return  accounts details
+     tags:
+      - Accounts
+     operationId: get-accounts-details
+     parameters: 
+        - in: query
+          name: accountId
+          description: Accounts identifier
+          required: false
+          schema:
+            type: string
+            maxLength: 10
+          example: '10000'          
+        - in: query
+          name: name
+          description: Account Name
+          required: false
+          schema:
+            type: string
+            maxLength: 100
+          example: 'CAPITAL SOCIAL'                    
+        - in: query
+          name: companyId
+          description: Unique Company Identifier        
+          required: false
+          schema:
+            type: string
+            maxLength: 4
+          example: '0023'          
+        - in: query
+          name: isSpecial
+          description: Special Indicator
+          required: false
+          schema:
+            type: string
+          example: Nrue          
+        - in: query
+          name: isAgent
+          description: Agents Indicator
+          required: false
+          schema:
+            type: string
+          example: N          
+        - in: query
+          name: isChannel
+          description: Channel Indicator
+          required: false
+          schema:
+            type: string
+          example: N         
+        - in: query
+          name: isWallet
+          description: Wallet Indicator
+          required: false
+          schema:
+            type: string
+          example: N          
+        - in: query
+          name: isFixedAsset
+          description: Fixed Asset Indicator
+          required: false
+          schema:
+            type: string
+          example: N         
+        - in: query
+          name: isAuxiliary
+          description: Auxiliary Indicator
+          required: false
+          schema:
+            type: string
+          example: N        
+        - in: query
+          name: isApplicant
+          description: Applicant Indicator
+          required: false
+          schema:
+            type: string
+          example: N        
+        - in: query
+          name: isProduct
+          description: Product Indicator
+          required: false
+          schema:
+            type: string
+          example: N       
+        - in: query
+          name: isProject
+          description: Product Indicator
+          required: false
+          schema:
+            type: string
+          example: N       
+        - in: query
+          name: isEstate
+          description: Estate Indicator
+          required: false
+          schema:
+            type: string
+          example: N        
+        - in: query
+          name: isGV
+          description: G.V Indicator
+          required: false
+          schema:
+            type: string
+          example: N        
+        - in: query
+          name: isGroupRepres
+          description: Group Representant Indicator
+          required: false
+          schema:
+            type: string
+          example: N         
+        - in: query
+          name: isPayment
+          description: Payment Indicator
+          required: false
+          schema:
+            type: string
+          example: N          
+        - in: query
+          name: isInterco
+          description: Interco Indicator
+          required: false
+          schema:
+            type: string
+          example: N        
+        - in: query
+          name: isDivision
+          description: Division Indicator
+          required: false
+          schema:
+            type: string
+          example: N          
+        - in: query
+          name: isReceipt
+          description: Receipt Indicator
+          required: false
+          schema:
+            type: string
+          example: N                            
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountDetails'         
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be completed due to a conflict with the current state of the target resource.
+                errorCode: '409' 
+               
+       
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'   
+  /bankAccounts:
+   get:
+     description: Return all bank-accounts. If filtered by bankAccountId or by iban, it only returns the account bank of the selected one.
+     summary: Return all bank-accounts
+     tags:
+      - BankAccounts
+     operationId: get-bank-accounts
+     parameters: 
+        - in: query
+          name: iban
+          description: iban account
+          schema:
+            type: string
+          example: 'ES12200859252020200278467'
+        - name: bankAccountId
+          in: query
+          description: Bank-Account Identifier
+          schema:
+            type: string
+            maxLength: 5
+          example: "85000"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BankAccount'     
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500' 
+  /agents:
+    get:
+     description: Return all agents. If filtered by agentId or by description, it only returns the agents of the selected one.
+     summary: Return Agents
+     tags:
+      - Agents
+     operationId: get-agents
+     parameters: 
+        - in: query
+          name: name
+          description: Agent Name
+          schema:
+            type: string
+          example: 'AGENTE GENERICO'
+        - name: agentId
+          in: query
+          description: Agent Identifier
+          schema:
+            type: string
+            maxLength: 10
+          example: "AG11111111"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Agents'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /auxiliaries:
+    get:
+     description: Return all auxiliaries. If filtered by auxiliaryId or by description, it only returns the auxiliaries of the selected one.Also known as cost centers
+     summary: Return Auxiliaries. Also known as cost centers
+     tags:
+      - Auxiliaries
+     operationId: get-auxiliaries
+     parameters: 
+        - in: query
+          name: name
+          description: Auxiliary Name
+          schema:
+            type: string
+          example: 'PRUEBA'
+        - name: auxiliaryId
+          in: query
+          description: Auxiliary Identifier
+          schema:
+            type: string
+            maxLength: 10
+          example: "123"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Auxiliary'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+                
+    post: 
+     description: Create Auxiliary 
+     summary: Create Auxiliary 
+     tags:
+      - Auxiliaries
+     operationId: post-auxiliaries
+     requestBody:
+       $ref: '#/components/requestBodies/AuxiliaryRQ' 
+     responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorCode: '400'
+                errorMessage: The request could not be understood by the server due malformed sintax.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'          
+  /auxiliaries/details: 
+    get:
+     description: Return all auxiliaries details. Filtered by company.
+     summary: Return Auxiliaries Details
+     tags:
+      - Auxiliaries
+     operationId: get-auxiliaries-details
+     parameters: 
+        - in: query
+          name: companyId
+          description: company Identifier
+          required: true
+          schema:
+            type: string
+            maxLength: 4
+          example: '0001'
+        - in: query
+          name: status
+          description: Status. If selected INACTIVES, return actives and actives
+          schema:
+            type: string
+            enum: ["INACTIVE","ACTIVE"]
+          example: 'ACTIVE'
+      
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuxiliaryDetail'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /auxiliaries/{auxiliaryId}:
+    put:
+     description: Update auxiliaries.
+     summary: Update auxiliaries.
+     tags:
+      - Auxiliaries
+     operationId: update-auxiliaries
+     parameters: 
+        - in: path
+          name: auxiliaryId
+          description: Auxiliary identifier
+          required: true
+          schema:
+            type: string
+          example: '0000000001'
+     requestBody:
+       $ref: '#/components/requestBodies/AuxiliaryRQUpdate'
+     responses:
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /auxiliaries/{auxiliaryId}/status:
+    patch:
+      summary: Patch auxiliary
+      description: Update status Auxiliary
+      tags:
+        - Auxiliaries
+      operationId: parcial-update-auxiliary
+      parameters:
+        - in: path
+          name: auxiliaryId
+          description: Auxiliary identifier
+          required: true
+          schema:
+            type: string
+          example: '0000000001'
+      requestBody:
+        $ref: '#/components/requestBodies/StatusRQAuxiliaryPatch'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The requested resource could not be found but may be available again in the future.
+                errorCode: '404'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /channels:
+    get:
+     description: Return all channels. If filtered by channelId or by name, it only returns the channel of the selected one.
+     summary: Return channels
+     tags:
+      - Channels
+     operationId: get-channels
+     parameters: 
+        - in: query
+          name: name
+          description: Channel Name
+          schema:
+            type: string
+          example: 'RED SALUD'
+        - name: channelId
+          in: query
+          description: channel Identifier
+          schema:
+            type: string
+            maxLength: 10
+          example: "RS"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Channel'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    post:
+     description: Create channel 
+     summary: Create  channels
+     tags:
+      - Channels
+     operationId: post-channels
+     requestBody: 
+       content:
+         application/json:
+          schema:
+           allOf: 
+              - $ref: '#/components/schemas/Channel'
+           required: 
+            - channelId
+            - name
+     responses:
+        '200':
+          description: OK
+          
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+               
+       
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /channels/{channelId}:
+    put: 
+     description: Modifiying Channels
+     summary: Update channels
+     tags:
+      - Channels
+     operationId: update-channels
+     parameters: 
+        - in: path
+          name: channelId
+          description: Channel Identifier
+          required: true
+          schema:
+            type: string
+            maxLength: 10
+          example: "RS"
+     requestBody: 
+       content:
+         application/json:
+          schema:
+            type: object
+            required: 
+              - description
+            properties:
+             name:
+               type: string
+               example: RED SALUD
+               description: This field indicates both the name of the channel
+              
+     responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The requested resource could not be found but may be available again in the future.
+                errorCode: '404'        
+       
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    delete: 
+     description: Delete Channel
+     summary: delete a channel by id
+     tags:
+      - Channels
+     operationId: delete-channels
+     parameters: 
+        - in: path
+          name: channelId
+          description: Channel Identifier
+          required: true
+          schema:
+            type: string
+            maxLength: 10
+          example: "RS"
+              
+     responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The requested resource could not be found but may be available again in the future.
+                errorCode: '404'        
+       
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /wallets:
+    get:
+     description: Return all wallets. If filtered by walletId or by name, it only returns the wallet of the selected one.
+     summary: Return Wallets
+     tags:
+      - Wallets
+     operationId: get-wallets
+     parameters: 
+        - in: query
+          name: name
+          description: wallets name
+          schema:
+            type: string
+          example: '01760003'
+        - name: walletId
+          in: query
+          description: wallets Identifier
+          schema:
+            type: string
+            maxLength: 10
+          example: "01760003"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Wallet'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /mediators:
+    get:
+     description: Return all mediators. If filtered by mediatorId or by name, it only returns the mediators of the selected one.
+     summary: Return mediators
+     tags:
+      - Mediators
+     operationId: get-mediators
+     parameters: 
+        - in: query
+          name: mediatorId
+          description: Mediator Unique identifier
+          schema:
+            type: string
+            maxLength: 8
+          example: 'M006609'
+        - name: mediatorName
+          in: query
+          description: Mediator Name
+          schema:
+            type: string
+          example: "MARIA ELENA RAMIREZ GONZALEZ"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Mediator'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /mediators/{mediatorId}/details:
+    get:
+     description: Return all mediators. If filtered by mediatorId or by name, it only returns the mediators of the selected one.
+     summary: Return mediators
+     tags:
+      - Mediators
+     operationId: get-mediators-details
+     parameters: 
+        - in: path
+          name: mediatorId
+          required: true
+          description: Mediator Unique identifier
+          schema:
+            type: string
+            maxLength: 8
+          example: 'M006609'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediatorExtended'
+               
+       
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /products:
+    get:
+     description: Return all products. If filtered by productId or by name, it only returns the products of the selected one.
+     summary: Return products
+     tags:
+      - Products
+     operationId: get-products
+     parameters: 
+        - in: query
+          name: productId
+          description: Product Unique identifier
+          schema:
+            type: string
+            maxLength: 10
+          example: '1100000'
+        - name: name
+          in: query
+          description: Product Name
+          schema:
+            type: string
+          example: "ACCIDENTES"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'    
+  /companies/{companyId}/departments:
+    post:
+     description: Create departments. 
+     summary: create departments
+     tags:
+      - DepartmentsCompanies
+     operationId: create-departments-company
+     parameters: 
+        - in: path
+          name: companyId
+          description: Company Identifier 
+          required: true
+          schema:
+            type: string
+            maxLength: 4
+          example: '0001'
+     requestBody:
+        $ref: '#/components/requestBodies/DepartmentCompanyRQ'
+     responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    get:
+     description: Return departments. 
+     summary: return departments
+     tags:
+      - DepartmentsCompanies
+     operationId: get-departments-company
+     parameters: 
+        - in: path
+          name: companyId
+          description: Company Identifier 
+          required: true
+          schema:
+            type: string
+            maxLength: 4
+          example: '0001'
+     responses:
+        '200':
+          description: OK
+          content:
+           application/json:
+             schema:
+               type: array
+               items:
+                 $ref: '#/components/schemas/DepartmentCompanyRP'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /companies/{companyId}/departments/{departmentId}:
+    get:
+     description: Get department Detail
+     summary: get department detail
+     tags:
+      - DepartmentsCompanies
+     operationId: get-departments-company-detail
+     parameters: 
+        - in: path
+          name: companyId
+          description: Company Identifier 
+          required: true
+          schema:
+            type: string
+            maxLength: 4
+          example: '0001'
+        - name: departmentId
+          in: path
+          required: true
+          description: Department Identifier
+          schema:
+            type: string
+          example: '6204'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentDetail'
+            
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    put:
+     description: Update departments
+     summary: Update departments
+     tags:
+      - DepartmentsCompanies
+     operationId: update-departments-company
+     parameters: 
+        - in: path
+          name: companyId
+          description: Company Identifier 
+          required: true
+          schema:
+            type: string
+            maxLength: 4
+          example: '0001'
+        - name: departmentId
+          in: path
+          required: true
+          description: Department Identifier
+          schema:
+            type: string
+          example: '6204'
+     requestBody:
+        $ref: '#/components/requestBodies/DepartmentUpdateRequest'
+     responses:
+        '204':
+          description: No content
+            
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    delete:
+     description: Only one department that has no child nodes can be deleted 
+     summary: delete departments.Only one department that has no child nodes can be deleted
+     tags:
+      - DepartmentsCompanies
+     operationId: delete-departments-company
+     parameters: 
+        - in: path
+          name: companyId
+          description: Company Identifier 
+          required: true
+          schema:
+            type: string
+            maxLength: 4
+          example: '0001'
+        - name: departmentId
+          in: path
+          required: true
+          description: Department Identifier
+          schema:
+            type: string
+          example: '6204'
+        
+     responses:
+        '204':
+          description: No content
+            
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    patch:
+     description: Parent of department.
+     summary: Change parent of an department
+     tags:
+      - DepartmentsCompanies
+     operationId: update-parent-deparment
+     parameters: 
+        - in: path
+          name: companyId
+          description: Company Identifier 
+          required: true
+          schema:
+            type: string
+            maxLength: 4
+          example: '0001'
+        - name: departmentId
+          in: path
+          required: true
+          description: Department Identifier
+          schema:
+            type: string
+          example: '6204'
+     requestBody:
+        $ref: '#/components/requestBodies/DepartmentRequest'
+         
+     responses:
+        '204':
+          description: No Content
+          
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'                
+  /departments:
+    get:
+     description: Return all departments. 
+     summary: Return departments
+     tags:
+      - Departments
+     parameters: 
+        - name: departmentId
+          in: query
+          description: Department Identifier
+          schema:
+            type: string
+          example: '6204'
+        - name: departmentName 
+          in: query
+          description: Department Name
+          schema:
+            type: string
+          example: 'VENTAS'
+     requestBody:     
+       content:
+           application/json:
+            schema:
+              type: object
+              required: 
+                - companyId, isPpm
+              properties:
+               companyId:
+                  type: string
+                  maxLength: 4
+                  example: "0001"
+                  description: Company Identifier
+               isPpm:
+                  type: boolean
+                  example: true
+                  description: is Pay per Mediators   
+     operationId: get-departments
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DepartmentLite'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'          
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'            
+  /concepts:
+    get:
+     description: Return all concept. 
+     summary: Return concept and Limits
+     tags:
+      - Concepts
+     operationId: get-concept
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:      
+                  $ref: '#/components/schemas/Concept'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'         
+  /ulobs:
+    get:
+     description: Return ulobs 
+     summary: Return ulobs
+     tags:
+      - Ulobs
+     operationId: get-ulobs
+     parameters:
+      - in: query
+        name: ulobName
+        description: Name Ulob
+        schema:
+          type: string
+        example: 'NOSE'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ulob'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'  
+  /intercos:
+    get:
+     description: Return all intercos. 
+     summary: Return intercos
+     tags:
+      - Intercos
+     parameters: 
+        - in: query
+          name: intercoId
+          description: Interco Identifier
+          schema:
+            type: string
+            maxLength: 10
+          example: 'EG0047'
+        - name: name
+          in: query
+          description: description Interco (Name)
+          schema:
+            type: string
+          example: "SANOSTRA"
+     operationId: get-intercos
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Intercos'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'   
+  /commercial-pgi/details/request:
+    post:
+     description: Return details commercial PGI. 
+     summary: Return details pgis
+     tags:
+      - CommercialPGIs
+     operationId: get-commercial-pgi-details
+     requestBody:
+       $ref: '#/components/requestBodies/PGICommercialdetails'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PGICommercialDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'  
+  /pgis:
+    get:
+     description: Return all commercial PGI. 
+     summary: Return pgis
+     tags:
+      - PgiCommercial
+     parameters: 
+        - in: query
+          name: reference
+          description: Reference
+          schema:
+            type: string
+            maxLength: 10
+          example: 'RPS MADRID'
+        - name: title
+          in: query
+          description: reference Title
+          schema:
+            type: string
+          example: "RAPPELS RED SALUD MADRID"
+          
+     operationId: get-pgi
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PGI'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'  
+  /pgis/details/request:
+    post:
+     description: Return details commercial PGI. 
+     summary: Return details pgis
+     tags:
+      - PgiCommercial
+     operationId: get-pgi-details
+     requestBody:
+       $ref: '#/components/requestBodies/PGIdetails'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  pgisDetails:
+                    type: array
+                    items:
+                     $ref: '#/components/schemas/PGIDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'  
+  /pgis/audits:
+    get:
+     description: Return audits for commercial PGI. 
+     summary: Return audits of pgis
+     tags:
+      - PgiCommercial
+     parameters: 
+        - in: query
+          name: reference
+          description: Reference
+          required: true
+          schema:
+            type: string
+            maxLength: 10
+          example: 'RPS MADRID'
+  
+     operationId: get-pgi-audit
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:     
+                  $ref: '#/components/schemas/PGIAudit'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500' 
+  /pgis/comments:
+    post:
+     description: Create comment for commercial PGI. 
+     summary: create comment for pgis
+     tags:
+      - PgiCommercial
+     requestBody:
+        $ref: '#/components/requestBodies/CommentPGI'
+     operationId: post-pgi-comment
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/CommentPGIResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500' 
+    get:
+     description: Return comment for especific commercial PGI. 
+     summary: Return comment for pgis
+     tags:
+      - PgiCommercial
+     operationId: get-pgi-comment
+     parameters: 
+        - in: query
+          name: reference
+          description: Reference
+          required: true
+          schema:
+            type: string
+            maxLength: 10
+          example: 'RPS MADRID'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentPGIResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500' 
+  /pgis/signatures:
+    get:
+     description: Return Signatures for PGI. 
+     summary: Return audits of pgis
+     tags:
+      - PgiCommercial
+     parameters: 
+        - in: query
+          name: reference
+          description: Reference
+          required: true
+          schema:
+            type: string
+            maxLength: 10
+          example: 'RPS MADRID'
+  
+     operationId: get-pgi-signatures
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                  type: array
+                  items:
+                  
+                   $ref: '#/components/schemas/Signatures'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500' 
+  /ppms:
+    post:
+     description: Create Proposal for payment to mediator. 
+     summary: create Proposal for payment to mediator
+     tags:
+      - Ppms
+     operationId: create-ppms
+     requestBody:
+        $ref: '#/components/requestBodies/PPMs'
+     responses:
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500' 
+  /ppms/request:
+    post:
+     description: Return Proposal for payment to mediator. 
+     summary: Return Proposal for payment to mediator
+     tags:
+      - Ppms
+     operationId: get-ppms
+     requestBody:
+        $ref: '#/components/requestBodies/PPMsRQ'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  ppms:
+                    type: array
+                    items:
+                    
+                     $ref: '#/components/schemas/PPMRESP'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500' 
+  /budgets/imports:
+    get:
+     description: Return all budgets. 
+     summary: Return budgets
+     tags:
+      - Budgets
+     operationId: get-budgets
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:                
+                   $ref: '#/components/schemas/Budgets'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500' 
+  /budgets/maintenances:
+    get:
+      description: Return Budgets Maintence. 
+      summary: Return Budgets Maintence
+      tags:
+        - Budgets
+      operationId: get-budget-maintence
+      parameters: 
+          - in: query
+            name: companyId
+            required: true
+            description: Company Identifier
+            schema:
+              type: string
+              maxLength: 4
+            example: "0001"
+          - name: accountId
+            in: query
+            required: true
+            description: account Identifier
+            schema:
+              type: string
+              maxLength: 10
+            example: "10000000"
+          - name: auxiliaryId
+            in: query
+            description: Auxiliary Identifier
+            schema:
+              type: string
+              maxLength: 10
+            example: "123"
+          - name: year
+            in: query
+            description: year
+            schema:
+              type: number
+            example: 2020
+          - name: status
+            in: query
+            description:  Indictator to return inactives and Actives IRPF types
+            schema:
+              type: string
+              enum: ["ACTIVE", "INACTIVE"]
+            example: "ACTIVE"
+
+      responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Budget-maintence'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorData'
+                example:
+                  errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                  errorCode: '500' 
+  /suppliers:
+    get:
+     description: Return all suppliers. 
+     summary: Return suppliers
+     tags:
+      - Suppliers
+     parameters: 
+        - in: query
+          name: cif
+          description: Identity Fiscal Number
+          schema:
+            type: string
+          example: 'A41001371'
+        - name: supplierName
+          in: query
+          description: Supplier's Name
+          schema:
+            type: string
+          example: "ALL FUNDS BANK SA"
+          
+     operationId: get-suppliers
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Supplier'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500' 
+  /suppliers/details:
+    get:
+     description: Return  suppliers details asociated a PGI. 
+     summary: Return suppliers details
+     tags:
+      - Suppliers
+     operationId: get-suppliers-details
+     parameters: 
+        - in: query
+          name: cif
+          description: Identity Fiscal Number
+          required: true
+          schema:
+            type: string
+          example: 'A41001371'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/SupplierDetail'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'  
+  /applicants:
+    get:
+     description: Return all applicants. 
+     summary: Return applicants 
+     tags:
+      - Applicants
+     parameters: 
+         - in: query
+           name: applicantId
+           description: Applicant Identifier
+           schema:
+             type: string
+             maxLength: 10
+           example: 'EMA001'
+         - name: name
+           in: query
+           description: Applicant Name
+           schema:
+             type: string
+           example: "ALFARO ALMEIA"
+          
+     operationId: get-applicants 
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Applicant'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'  
+  /department/{departmentId}/substitutes:
+    get:
+     description: Return all substitutes in a department. 
+     summary:  Return all substitutes in a department 
+     tags:
+      - DepartmentSubstitutes
+     operationId: get-substitutes 
+     parameters:
+      - in: path
+        name: departmentId
+        description: Department Identifier
+        required: true
+        schema:
+          type: string
+        example: '6204'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Substitutes'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'  
+  /announcements:
+    get:
+     description: Returns the number of notices. Return bills, expense sheets and expense vouchers Number.
+     summary:  Returns the number announcements.  
+     tags:
+      - Announcement
+          
+     operationId: get-announcements 
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  Announcement:
+                    $ref: '#/components/schemas/Annuncement'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500' 
+  /estates:
+   get:
+     description: Returns all the real estate assets of a company. If filtered by estateId or by name (address)), it only returns the estates of the selected one.
+     summary: Return estates
+     tags:
+      - Estates
+     operationId: get-estates
+     parameters: 
+        - in: query
+          name: name
+          description: Estate name
+          schema:
+            type: string
+          example: 'MADRID,BARQUILLO, 17'
+        - name: estateId
+          in: query
+          description: Estate Identifier
+          schema:
+            type: string
+            maxLength: 10
+          example: "00001"
+        - name: companyId
+          in: query
+          required: true
+          description: Company Identifier
+          schema:
+            type: string
+            maxLength: 4
+          example: "0001"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Estates'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /operations:
+    get:
+     description: List of Transactions that allows you to view the transactions associated with the Payment Proposal.
+     summary: Return operations
+     tags:
+      - Operations
+     operationId: get-operations
+     parameters: 
+        - in: query
+          name: proposalId
+          description: Proposal Payment identifier
+          required: true
+          schema:
+            type: string
+          example: '7'
+        - name: companyId
+          in: query
+          required: true
+          description: Company Identifier
+          schema:
+            type: string
+            maxLength: 4
+          example: "0001"
+        - in: query
+          name: mediatorId
+          description: Mediator Name
+          required: true
+          schema:
+            type: string
+          example: 'MARCHAL CONSULTORES S.L.'
+        - name: accountingDate
+          in: query
+          description: Accounting Date 
+          required: true
+          schema:
+            type: string
+            format: date
+          example: "25/01/2011"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperationTr'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /taxes/taxTypes:
+    get:
+     description: List of tax types.
+     summary: Return tax
+     tags:
+      - Taxes
+     operationId: get-tax
+     parameters: 
+        - in: query
+          name: name
+          description: Tax type Name (description)
+          schema:
+            type: string
+          example: '7'
+        - name: status
+          in: query
+          description:  Indictator to return inactives and Actives IRPF types
+          schema:
+            type: string
+            enum: ["ACTIVE", "INACTIVE"]
+          example: "ACTIVE"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tax'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+                        
+  /taxes/irpfTypes:
+    get:
+     description: List of IRPF types.
+     summary: Return IRPF
+     tags:
+      - Taxes
+     operationId: get-irpf
+     parameters: 
+        - in: query
+          name: name
+          description: IRPF type Name (description))
+          schema:
+            type: string
+          example: '7'
+        - name: status
+          in: query
+          description:  Indictator to return inactives and Actives IRPF types
+          schema:
+            type: string
+            enum: ["ACTIVE", "INACTIVE"]
+          example: "ACTIVE"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IRPFRP'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    post:
+     description: Create IRPF types.
+     summary: Create IRPF
+     tags:
+      - Taxes
+     operationId: create-irpf
+     requestBody:
+       $ref: '#/components/requestBodies/IRPFRQ'
+     responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /taxes/irpfTypes/{irpfTypeId}:
+    get:
+     description: Get IRPF by Id.
+     summary: Return IRPF
+     tags:
+      - Taxes
+     operationId: get-irpf-byId
+     parameters: 
+        - in: path
+          name: irpfTypeId
+          description: IRPF type Identifier (code)
+          required: true
+          schema:
+            type: string
+            maxLength: 2
+          example: '01'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/IRPFRP'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500' 
+                  
+    put:
+     description: List of IRPF types.
+     summary: Return IRPF
+     tags:
+      - Taxes
+     operationId: update-irpf
+     parameters: 
+        - in: path
+          name: irpfTypeId
+          description: IRPF type Identifier (code)
+          required: true
+          schema:
+            type: string
+          example: '01'
+     requestBody:
+        $ref: '#/components/requestBodies/IRPFRQUpdate'
+         
+     responses:
+        '204':
+          description: No Content
+          
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /taxes/irpfTypes/{irpfTypeId}/status:
+    patch:
+     description: Status of IRPF types.
+     summary: Change status IRPF
+     tags:
+      - Taxes
+     operationId: update-status-irpf
+     parameters: 
+        - in: path
+          name: irpfTypeId
+          description: IRPF type Identifier (code)
+          required: true
+          schema:
+            type: string
+          example: '01'
+     requestBody:
+        $ref: '#/components/requestBodies/Status'
+         
+     responses:
+        '204':
+          description: No Content
+          
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /taxes/vatTypes:
+    get:
+     description: List of IRPF types.
+     summary: Return IRPF
+     tags:
+      - Taxes
+     operationId: get-vat
+     parameters: 
+        - in: query
+          name: description
+          description: VAT type Name (description))
+          schema:
+            type: string
+          example: '7'
+        - name: filterBy
+          in: query
+          description:  Indictator to return ALL, DEDUCTIBLES and NON-DEDUCTIBLES
+          schema:
+            type: string
+            enum: ["ALL", "NONDEDUCTIBLE", "DEDUCTIBLE"]
+          example: "ALL"
+        - name: taxType
+          in: query
+          description:  Tax Type
+          schema:
+            type: string
+          example: "II- IVA AUTOREPERCUTIDO"
+        - name: status
+          in: query
+          description:  Status
+          schema:
+            type: string
+            enum: ["ACTIVE", "INACTIVE"]
+          example: "INACTIVE"
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VATType'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+    post:
+     description: Create VAT types.
+     summary: Create VAT
+     tags:
+      - Taxes
+     operationId: create-vat
+     requestBody:
+       $ref: '#/components/requestBodies/VATRQ'
+     responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The request could not be understood by the server due malformed sintax.
+                errorCode: '400'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /taxes/vatTypes/{vatTypeId}:
+    get:
+     description: Get VAT by Id.
+     summary: Return VAT
+     tags:
+      - Taxes
+     operationId: get-vat-byId
+     parameters: 
+        - in: path
+          name: vatTypeId
+          description: VAT type Identifier (code)
+          required: true
+          schema:
+            type: string
+            maxLength: 2
+          example: '01'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/VATType'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'  
+    put:
+     description: List of IRPF types.
+     summary: Return IRPF
+     tags:
+      - Taxes
+     operationId: update-vat
+     parameters: 
+        - in: path
+          name: vatTypeId
+          description: VAT type Identifier (code)
+          required: true
+          schema:
+            type: string
+            maxLength: 2
+          example: '01'
+     requestBody:
+        $ref: '#/components/requestBodies/VATRQUpdate'
+         
+     responses:
+        '204':
+          description: No Content
+          
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /taxes/vatTypes/{vatTypeId}/status:
+    patch:
+     description: Status of IRPF types.
+     summary: Change status IRPF
+     tags:
+      - Taxes
+     operationId: update-status-vat
+     parameters: 
+        - in: path
+          name: vatTypeId
+          description: IRPF type Identifier (code)
+          required: true
+          schema:
+            type: string
+          example: '01'
+     requestBody:
+        $ref: '#/components/requestBodies/Status'
+         
+     responses:
+        '204':
+          description: No Content
+          
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /settings/keys:
+    get:
+     description: List of Setting (application settings).
+     summary: Return application settings)
+     tags:
+      - Settings
+     operationId: get-settings
+     parameters: 
+        - in: query
+          name: keyId
+          description: Setting Identifier (key).
+          schema:
+            type: string
+            maxLength: 15
+          example: 'CORREO_CLI'
+        - name: value
+          in: query
+          description: Value Setting
+          schema:
+            type: string
+          example: "janton@gmail"
+        - in: query
+          name: description
+          description: Setting Description
+          schema:
+            type: string
+          example: 'Dirección de correo para envio de mensajes de avisos'
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Setting'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /settings/keys/{keyId}:
+    put:
+     description: update of Setting (application settings).
+     summary: Update Settings application
+     tags:
+      - Settings
+     operationId: update-settings
+     parameters: 
+        - in: path
+          name: keyId
+          required: true
+          description: Setting Identifier (key).
+          schema:
+            type: string
+            maxLength: 15
+          example: 'CORREO_CLI'
+     requestBody:
+        $ref: '#/components/requestBodies/Setting'  
+     responses:
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /companies/{companyId}/pyramids/save:
+    post:
+     description: Save(copy)Pyramids, by company
+     summary: Copy Pyramids by company. In the request the company in which you want to make the copy is passed
+     tags:
+      - PyramidsCompany
+     operationId: create-pyramids-save
+     parameters: 
+        - name: companyId
+          in: path
+          required: true
+          description: Company Identifier
+          schema:
+            type: string
+            maxLength: 4
+          example: "0001"
+     requestBody:
+        $ref: '#/components/requestBodies/PyramidsCopy'
+         
+     responses:
+        '204':
+          description: No Content
+          
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /companies/{companyId}/pyramids:
+    delete:
+     description: Delete Pyramids, by company
+     summary: Delete Pyramids by company. The entire pyramid is erased
+     tags:
+      - PyramidsCompany
+     operationId: delete-pyramids
+     parameters: 
+        - name: companyId
+          in: path
+          required: true
+          description: Company Identifier
+          schema:
+            type: string
+            maxLength: 4
+          example: "0001"   
+     responses:
+        '204':
+          description: No Content
+          
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /signatures:
+    get:
+     description: List of Signatures
+     summary: Return Signatures
+     tags:
+      - Signatures
+     operationId: get-signatures
+     responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Signatures'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /accountingplans:
+    get:
+      summary: Search Accounting Plans
+      operationId: get-accountingplans
+      description: Search for Accounting Plans
+      tags:
+        - AccountingPlans
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    planId:
+                      type: string
+                    planName:
+                      type: string
+  
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /permissions:
+    get:
+      summary: Search permission
+      operationId: get-permission
+      description: Search for permission
+      tags:
+        - Permisssions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Permission'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  /meta4:
+    get:
+      summary: Search department and responsible
+      operationId: get-meta4-department-responsible
+      description: Search by department or responsible
+      tags:
+        - Meta4
+      parameters: 
+        - in: query
+          name: departmentId
+          description: Department Identifier.
+          schema:
+            type: string
+            maxLength: 32
+          example: 'C00012'
+        - name: nameDepartment
+          in: query
+          description: Department name.
+          schema:
+            type: string
+            maxLength: 32
+          example: "TRANSFORMACIÓN DIGITAL"
+        - in: query
+          name: responsibleId
+          description: responsible Identifier.
+          schema:
+            type: string
+            maxLength: 15
+          example: "11028"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Meta4Response'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+              example:
+                errorMessage: The server encountered an unexpected condition which prevented it from fulfilling the request.
+                errorCode: '500'
+  
+  
+  
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - userId
+        - name
+        - email
+        - isSendEmail
+        - roleId
+      properties:
+        userId:
+          type: string
+          maxLength: 15
+          description: User Unique identifier
+          example: 'UISMBC'
+        name:
+          type: string
+          maxLength: 50
+          description: FullName
+          example: Carlos Jesus Isaias Molina Brodersen
+        email:
+          type: string
+          maxLength: 30
+          description: User email
+          example: carlos@gmail.com
+        isSendEmail:
+          type: boolean
+          description: Indicate is send Email
+          example: true
+        roleId:
+           type: string
+           description: Role unique Identifier
+           example: "TEST"
+    UserResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: User Unique identifier
+          example: 'UISMCB'
+          maxLength: 15
+        name:
+          type: string
+          description: User FullName
+          example: Montserrat Cura
+          maxLength: 50
+        email:
+          type: string
+          description: User email
+          example: monserrat@gmail.com
+          pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$
+        isSendEmail:
+          type: boolean
+          description: indicate if want send email
+          example: true
+        status:
+          type: string
+          description: Return if user is active or not
+          example: 'ACTIVE'
+        roles:
+           $ref: '#/components/schemas/RolResponse'
+    UserUpdate: 
+      type: object
+      required:
+        - name
+        - email
+        - isSendEmail
+        - roleId
+      properties:
+        name:
+          type: string
+          maxLength: 50
+          description: FullName
+          example: Carlos Jesus Isaias Molina Brodersen
+        email:
+          type: string
+          maxLength: 30
+          description: User email
+          example: carlos@gmail.com
+        isSendEmail:
+          type: boolean
+          description: Indicate is send Email
+          example: true
+        roleId:
+           type: string
+           description: Role unique Identifier
+           example: "TEST"
+    Role:
+      type: object
+      required:
+        - roleId
+        - description
+      properties:
+        roleId:
+          type: string
+          description: Role unique Identifier
+          example: 'TEST'
+        description:
+          type: string
+          description: TEST PRUEBA ROL
+          example: Usuario
+    RolResponse:
+      type: object
+      properties:
+        roleId:
+          type: string
+          description: Role unique Identifier
+          example: TEST
+        description:
+          type: string
+          description: Description Role
+          example: TEST PRUEBA ROL
+    RoleRequest:
+      type: object
+      required: 
+        - roleId
+        - menu
+        - pyramidBills
+        - pyramidPPMs
+        - companies
+        - departments
+        - actions
+      properties:
+        roleId:
+          type: string
+          description: Role unique Identifier
+          example: TEST
+        description:
+          type: string
+          description: Description Role
+          example: TEST PRUEBA ROL
+        menus: 
+         type: array
+         items:
+            $ref: '#/components/schemas/Menus'
+        pyramidBills:
+            $ref: '#/components/schemas/Pyramids'
+        pyramidPPMS:
+            $ref: '#/components/schemas/Pyramids'
+    Department:
+      type: object
+      properties: 
+        departmentId:
+          description: Department Identifier (code)
+          type: string
+          example: '0001'
+        departmentName:
+          type: string
+          example: VENTAS
+        actions:
+              type: array
+              items:
+                $ref: '#/components/schemas/Actions'
+    DepartmentLite:
+      type: object
+      properties: 
+        departmentId:
+          description: Department Identifier (code)
+          type: string
+          example: '0001'
+        departmentName:
+          type: string
+          example: VENTAS      
+    Concept:
+      type: object
+      description: Concepts and Limits
+      properties:
+        conceptId:
+          type: string
+          description: Concept Identifier (code)
+          example: "1"
+        conceptName:
+          type: string
+          description: Concept Name
+          example: "RAPPELS"
+    DepartmentCompanyRP:  
+      type: object
+      properties: 
+        departmentId:
+          description: Department Identifier (code)
+          type: string
+          example: '0001'
+        departmentName: 
+          type: string
+          description: Unit Name
+          example: "DIRECCION GENERAL"
+        departmentIdExt:
+          type: string
+          description: Own Identifier Department
+          example: "S-C0090"
+        parentId: 
+          type: string
+          description: Department Parent
+          example: "UISMB"
+        fileNumber:
+          type: number
+          description: File Number
+          example: 1128
+        paymentOficce:
+          type: string
+          maxLength: 3
+          example: "950"
+        concept:
+          type: array
+          description: Concept Type and Limits
+          items:
+              $ref: '#/components/schemas/ConceptReducedForGetDepartmentCompany' 
+        responsibles:
+          type: object
+          description: Responsibles
+          properties: 
+            responsibleId:
+              type: string
+              description: Responsible Identifier
+              example: "UDXESA"
+            responsibleName:
+              type: string
+              description: Responsible Name
+              example: "Pedro Valle"
+            substitutes:
+              type: object
+              properties:
+                substituteId:
+                  type: string
+                  description: Responsible Susbstitute Id
+                  example: "UPRQI"           
+                substituteName:
+                  type: string
+                  description: Responsible Susbstitute Name
+                  example: "Lucia Tierra"           
+    DepartmentCompanyRQ:
+      type: object
+      properties: 
+        origin:
+          type: string
+          enum: [MANUAL, META4]
+          example: "MANUAL"
+        department:
+          type: object
+          properties:
+            departmentName: 
+              type: string
+              description: Unit Name
+              example: "DIRECCION GENERAL"
+            departmentIdExt:
+              type: string
+              description: Own Identifier Department
+              example: "S-C0090"
+            parentId: 
+              type: string
+              description: Department Parent
+              example: "UISMB"
+            fileNumber:
+              type: number
+              description: File Number
+              example: 1128
+            concept: 
+              type: array
+              description: Concepts
+              items:
+                $ref: '#/components/schemas/Concept'
+            isDelegatedSignature:
+              type: boolean
+              description: Boolean to delegate responsibles
+              example: true
+            isPpm:  
+              type: boolean
+              description: is Pay per Mediators
+              example: true
+            auxiliaryId:
+               type: string
+               example: '0123456789'
+               description: Auxiliary Identifier
+            responsibles:
+              type: object
+              description: Responsibles 
+              properties: 
+                responsibleId:
+                  type: string
+                  description: Responsible Identifier
+                  example: "UDXESA"
+                substitutes:
+                  type: object
+                  properties:
+                    substituteId:
+                      type: string
+                      description: Responsible Susbstitute MIRAR SI EXISTE Y SI SUSTITUTO ACTIVO.
+                      example: "UPRQI"
+    DepartmentUpdateRQ:
+      type: object
+      properties:
+           departmentName: 
+              type: string
+              example: "DIRECCION GENERAL"
+           paymentOficce:
+                  type: string
+                  maxLength: 3
+                  example: "950"  
+           auxiliaryId:
+                  type: string
+                  example: '123'
+                  description: Auxiliary Identifier
+           actualResponsible:
+              type: object
+              properties:
+               userId:
+                  type: string
+                  maxLength: 15
+                  example: "ABEMOY01"
+               userName:
+                  type: string
+                  maxLength: 50
+                  example: "ALBERTO PRESAS"
+               representativeSignature:
+                 type: string
+                 description: User
+                 example: "ALBERTO PRESAS"
+               isDelegatedSignature:
+                 type: boolean
+                 description: Indicate if is or not Delegate Signature
+                 example: true
+               effectDate:
+                 type: string
+                 format: date
+                 description: Efect Date Limit (DD/MM/AAAA)
+                 example: '22/09/2022'
+               historicResponsibles:
+                type: object
+                properties:
+                  responsibles:
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/ResponsiblesDepartment'
+                  limitsAndConcept:
+                    type: array
+                    items:
+                       $ref: '#/components/schemas/Concept'
+    DepartmentDetail:
+      type: object
+      properties:
+           departmentName: 
+              type: string
+              example: "DIRECCION GENERAL"
+           paymentOficce:
+                  type: string
+                  maxLength: 3
+                  example: "950"  
+           auxiliaryId:
+                  type: string
+                  example: '123'
+                  description: Auxiliary Identifier
+           actualResponsible:
+              type: object
+              properties:
+               userName:
+                  type: string
+                  maxLength: 50
+                  example: "ALBERTO PRESAS"
+               representativeSignature:
+                 type: string
+                 description: User
+                 example: "ALBERTO PRESAS"
+               isDelegatedSignature:
+                 type: boolean
+                 description: Indicate if is or not Delegate Signature
+                 example: true
+               historicResponsibles:
+                type: object
+                properties:
+                  responsibles:
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/ResponsiblesDepartment'
+                  historicalSignatoriesRepresentative:
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/historicalSignatoriesRepresentative'
+    ConceptReduced:
+      type: object
+      description: Concepts and Limits
+      properties:
+        conceptId:
+          type: string
+          enum: ["RAPPELS", "SUBSIDIES", "OTHERS"]
+          description: Concept Identifier (code)
+          example: "RAPPELS"
+        limit: 
+          type: number
+          format: double
+          description: Limit about concept
+          example: 908.7
+    ConceptReducedForGetDepartmentCompany:
+      type: object
+      description: Concepts and Limits
+      properties:
+        conceptId:
+          type: string
+          description: Concept Identifier (code)
+          example: "1"
+        conceptName:
+          type: string
+          description: ConceptName
+          example: "RAPPELS"
+        effectDate:
+          type: string
+          format: date
+          description: Efect Date Limit (DD/MM/AAAA)
+          example: '22/09/2022'        
+        limit: 
+          type: number
+          format: double
+          description: Limit about concept
+          example: 908.7
+    historicalSignatoriesRepresentative:
+      type: object
+      properties:
+        representativeSignature:
+          type: string
+          description: User
+          example: "ALBERTO PRESAS"
+        startDate:
+          type: string
+          format: date-time
+          description: Start Date
+          example: '27/07/2015 16:08:56'
+        endDate:
+          type: string
+          format: date-time
+          description: End Date
+          example: '27/07/2022 16:08:56'
+    ResponsiblesDepartment:
+       type: object
+       description: Responsibles for editing department
+       properties:
+        responsibleName: 
+          type: string
+          example: "JUAN PEREZ"
+        limitsAndConcept:
+          type: array
+          items:
+           $ref: '#/components/schemas/ConceptReduced'
+        limit:
+          type: number
+          format: double
+          description: Limit about concept
+          example: 908.7
+        effectDate:
+          type: string
+          format: date
+          description: Efect Date Limit (DD7MM/AAAA)
+          example: '22/09/2022'
+        isDelegatedSignature:
+                 type: boolean
+                 description: Indicate if is or not Delegate Signature
+                 example: true
+    Company:
+     type: object
+     properties: 
+       companyId:
+         type: string
+         example: '0001'
+       companyName:
+         type: string
+         example: "CASER SALUD"
+       departments:
+          type: array
+          items: 
+              $ref: '#/components/schemas/Department'
+    Menus:
+     type: object
+     properties:
+      menuId:
+       type: string
+       description: Menu Identifier
+       example: '0900'
+      menuParentId:
+        type: string
+        description: Menu Parent Identifier
+        example: '0000'
+      orderNumber:
+         type: number
+         description: Order Number Menu
+         example: 17
+      descriptionEn:
+        type: string
+        description: English description
+        example: Management
+      descriptionEs:
+        type: string
+        description: Spanish description
+        example: Administracion
+    UpdateRole:     
+        type: object
+        required: 
+          - menu
+          - actions
+        properties:
+          description:
+            type: string
+          menus: 
+             type: array
+             items:
+                $ref: '#/components/schemas/Menus'
+          pyramidBills:
+              $ref: '#/components/schemas/Pyramids'
+          pyramidPPMs:
+              $ref: '#/components/schemas/Pyramids'
+    RolExtendedResponse:
+        type: object
+        properties:
+         role:
+          $ref: '#/components/schemas/Role'
+         menus: 
+             type: array
+             items:
+                $ref: '#/components/schemas/MenuResponse'
+         pyramidBills:
+              $ref: '#/components/schemas/Pyramids'
+         pyramidPPMs:
+              $ref: '#/components/schemas/Pyramids'
+    Pyramids:
+       type: object
+       properties:
+         pyramidId:
+           type: string
+           enum: ["P", "F"]
+           description: Indicate if P (PPM), if value is F (Bills) 
+         companies: 
+           type: array
+           items: 
+             $ref: '#/components/schemas/Company'
+    Estates:
+     type: object
+     description: Estates Object Response
+     properties:
+      estateId:
+        type: string
+        description: Estate Identifier Identifier
+        example: '00001'
+      name:
+        type: string
+        description: Estate name
+        example: 'MADRID,BARQUILLO,17'
+    Actions:
+            type: object
+            required:
+             - actionId
+            properties:
+                actionId:
+                  type: string
+                  description: Action
+                  example: INTERVENCION
+                actionDescription: 
+                  type: string
+                  description: Action Description
+                  example: INTERVENCION
+                actionDescriptionEn:
+                  type: string
+                  description: Description English action
+                  example: INTERVENTION
+    MenuResponse:
+      type: object
+      description: Menu Object Response
+      properties:
+        menuId:
+          type: string
+          description: Menu Identifier
+          example: '0900'
+        menuParentId:
+          type: string
+          description: Menu Parent Identifier
+          example: '0000'
+        descriptionEn:
+          type: string
+          description: English menu description
+          example: Management
+        descriptionEs:
+          type: string
+          description: Spanish menu description
+          example: Administracion
+        orderNumber:
+         type: number
+         description: Order Number Menu
+         example: 17
+    ActionResponse:
+      type: object
+      description: Action Object Response
+      properties:
+        actionId:
+          type: string
+          description: Action Identifier
+          example: 'INTERVENCION'
+        actionDescription:
+          type: string
+          description: Action description
+          example: 'INTERVENCION'
+        descriptionEn:
+          type: string
+          description: English menu description
+          example: INTERVENTION
+    Companies:
+      type: object
+      properties: 
+       companyId:
+         type: string
+         example: '0023'
+         description: Unique Company Identifier
+       companyName: 
+         type: string
+         example: "BANCO GALLEGO V y P"
+         description: company Name 
+    CompaniesDetailsById:
+      type: object
+      properties: 
+       companyName: 
+         type: string
+         example: "BANCO GALLEGO V y P"
+         description: company Name
+       mileageAmount:
+         type: number
+         format: double
+         example: 0.14
+       mileageExceededAmount:
+         description: Amount of excess mileage
+         type: number
+         format: double
+         example: 0.14
+       ownBank: 
+        type: string
+        description: House Bank
+        example: '0090'
+       status:
+         type: string
+         description: Company Status. Can be INACTIVE or ACTIVE
+         enum: ["ACTIVE","INACTIVE"]
+         example: 'INACTIVE'
+       accountingPlan: 
+         type: number
+         description: Plan Accounting
+         example: 22
+       vatTypes: 
+         type: array
+         items: 
+            $ref: '#/components/schemas/VATReduced'
+    VATReduced:
+      type: object
+      description: VAT Fields Reduced
+      properties: 
+         vatTypeId:
+           type: string
+           description: Identifier VAT
+           example: "AD"
+         description: 
+           type: string
+           description: Description VAT
+           example: "IVA SOPORTADO DEDUCTIBLE 4%"
+    CompaniesDetails:
+      type: object
+      properties: 
+       companyId:
+         type: string
+         example: '0023'
+         description: Unique Company Identifier
+       companyName: 
+         type: string
+         example: "BANCO GALLEGO V y P"
+         description: company Name
+       mileageAmount:
+         type: number
+         format: double
+         example: 0.14
+       mileageExceededAmount:
+         description: Amount of excess mileage
+         type: number
+         format: double
+         example: 0.14
+       ownBank: 
+        type: string
+        description: House Bank
+        example: '0090'
+       status:
+         type: string
+         description: Company Status. Can be INACTIVE or ACTIVE
+         enum: ["ACTIVE","INACTIVE"]
+         example: 'INACTIVE'
+    CompanyRQUpdate:
+      type: object
+      required:
+        - companyName
+        - mileageAmount
+        - mileageExceededAmount
+        - accountingPlan
+        - availableRates
+      properties: 
+       companyName: 
+         type: string
+         example: "BANCO GALLEGO V y P"
+         description: company Description
+       mileageAmount:
+         type: number
+         format: double
+         example: 0.14
+       mileageExceededAmount:
+         description: Amount of excess mileage
+         type: number
+         format: double
+         example: 0.14
+       ownBank: 
+        type: string
+        description: House Bank
+        example: '0090'
+       accountingPlan:
+         type: string
+         description: Company's accounting plan
+         enum: 
+          - GENERAL PLAN
+          - INSURANCE PLAN
+         example: "GENERAL PLAN"
+       vatTypes:
+        type: array
+        description: Available VAT/IGIC Rates
+        items:
+          $ref: '#/components/schemas/VATReduced'
+    statusPgiEnum:
+     description: Status PGI
+     type: string
+     enum:
+      - ABIERTAS
+      - CONFIRMADAS
+      - CERRADAS
+     example: 'ABIERTAS' 
+    PGIAudit:
+      type: object
+      properties: 
+       title:
+         type: string
+         example: '10000000'
+         description: PGI title
+       createdAt: 
+         type: string
+         example: "CHARO MARTIN"
+         description: Creation User
+       createdDate:
+        type: string
+        format: date-time
+        description: Creation Date
+        example: '10/07/2022 09:07:37'
+       lastUpadeateAt:
+         type: string
+         example: "CHARO MARTIN"
+         description: Last Update User
+       lastUpdateDate:
+         type: string
+         format: date-time
+         description: Last Update Date
+         example: '10/07/2022 09:07:37'
+    Accounts:
+      type: object
+      properties: 
+       accountId:
+         type: string
+         example: '10000000'
+         description: Unique Account Identifier
+       name: 
+         type: string
+         example: "CAPITAL SOCIAL"
+         description: Account Name
+    AccountDetails:
+      type: object
+      properties:
+        accountId:
+         type: string
+         example: '10000000'
+         description: Unique Account Identifier
+        name: 
+         type: string
+         example: "CAPITAL SOCIAL"
+        companyId:
+         type: string
+         example: '0023'
+         description: Unique Company Identifier
+        isSpecial:
+         type: boolean
+         example: true
+         description: Special Indicator
+        isAgent:
+         type: boolean
+         example: true
+         description: Agents Indicator
+        isChannel:
+         type: boolean
+         example: true
+         description: Channel Indicator
+        isFixedAsset:
+         type: boolean
+         example: true
+         description: Fixed Asset Indicator
+        isAuxiliary:
+         type: boolean
+         example: true
+         description: Auxiliary Indicator
+        isApplicant:
+         type: boolean
+         example: true
+         description: Applicant Indicator
+        isProduct:
+         type: boolean
+         example: true
+         description: Product Indicator
+        isProject:
+         type: boolean
+         example: true
+         description: Project Indicator
+        isGV:
+         type: boolean
+         example: true
+         description: G.V Indicator
+        isGroupRepres:
+         type: boolean
+         example: true
+         description: Group Representant Indicator
+        isPayment:
+         type: boolean
+         example: true
+         description: Payment Indicator
+        isInterco:
+         type: boolean
+         example: true
+         description: Interco Indicator
+        isDivision:
+         type: boolean
+         example: true
+         description: Division Indicator
+        isReceipt:
+         type: boolean
+         example: true
+         description: Receipt Indicator
+        auxiliary:
+         type: string
+         example: 12345566
+         description: Auxiliary Identifier
+    BankAccount:
+      type: object
+      properties: 
+       bankAccountId:
+         type: string
+         example: '85000'
+         description: Unique Bank-Account Identifier
+       iban: 
+         type: string
+         example: "ES12200859252020200278467"
+         description: IBAN Acccount 
+    Agents:
+     type: object
+     properties: 
+       agentId:
+         type: string
+         example: 'AG111111111'
+         description: Agent Identifier
+       name: 
+         type: string
+         example: "AGENTE GENERICO"
+         description: Agent Name
+    Auxiliary:  
+      type: object
+      properties: 
+       auxiliaryId:
+         type: string
+         example: '123'
+         description: Auxiliary Identifier
+       name: 
+         type: string
+         example: "AGENTE GENERICO"
+         description: Auxiliary Name
+    Channel:
+      type: object
+      properties: 
+       channelId:
+         type: string
+         example: 'RS'
+         description: Channel Identifier
+       name: 
+         type: string
+         example: "RED SALUD"
+         description: Channel Name
+    Wallet:
+      type: object
+      properties: 
+       walletId:
+         type: string
+         example: '01760003'
+         description: Wallet Identifier
+       name: 
+         type: string
+         example: "01760003"
+         description: Wallet Name
+    Mediator:
+      type: object
+      properties: 
+       mediatorId:
+         type: string
+         example: 'M000780900'
+         description: Mediator Unique Identifier
+       mediatorName: 
+         type: string
+         example: "MARIA GONZALEZ"
+         description: Mediator's Name
+    MediatorExtended:
+     type: object
+     description: Mediator Info Details
+     properties:
+        mediatorId:
+         type: string
+         example: 'M000780900'
+         description: Mediator Unique Identifier
+        mediatorName: 
+         type: string
+         example: "MARIA GONZALEZ"
+         description: Mediator's Name
+        mediatorCode: 
+          type: string
+          description: Mediator Code
+          example: "02"
+        society: 
+          type: string
+          maxLength: 4
+          description: society
+          example: "0002"
+        cif:
+          type: string
+          example: 'A410001371'
+          description: Identity Fiscal Number
+        address:
+          type: object
+          properties:
+            address: 
+              type: string
+              description: Adress
+              example: "CALLE PIO 12"
+            town:
+              type: string
+              description: Town Name
+              example: "MADRID"
+            province:
+              type: string
+              example: "MADRID"
+              description: Province Name
+            postalCode:
+             type: string
+             description: Postal Code
+             example: "28032"
+            country:
+              type: string
+              description: Country Name
+              example: "ESPAÑA"
+            language:
+              type: string
+              description: Language Code
+              example: "ESP"
+        account:
+          type: object
+          properties:
+            iban: 
+               type: string
+               example: "ES12200859252020200278467"
+               description: IBAN Acccount 
+            countryIban:
+              type: string
+              example: "ESPAÑA"
+            swift:
+              type: string
+              example: 'A410001371'
+              description: Identity Swift
+    Product:
+      type: object
+      properties: 
+       productId:
+         type: string
+         example: '1100000'
+         description: Unique product Identifier
+       name: 
+         type: string
+         example: "ACCIDENTES"
+         description: Product Name
+    Intercos:
+      type: object
+      properties: 
+       intercoId:
+         type: string
+         example: 'EG0047'
+         description: Unique inteco Identifier
+       name: 
+         type: string
+         example: "SANOSTRA"
+         description: Interco Description (name)
+    PGI:
+      type: object
+      properties: 
+       reference:
+         type: string
+         example: 'RPS MADRID'
+         description: Pgi Reference
+       title: 
+         type: string
+         example: "RAPPELS RED SALUD MADRID"
+         description: title Description
+    PGICommercialDetails:  
+      type: object
+      properties: 
+       conceptId:
+         type: string
+         description: Concept Identifier (code)
+         example: "1"
+       conceptName:
+         type: string
+         description: Concept Name
+         example: "RAPPELS"
+       channelId:
+         type: string
+         description: Channel Identifier (code)
+         example: "1"
+       channelName:
+         type: string
+         description: Channel Name
+         example: "Web"
+       isPyramid:
+         type: boolean
+         description: Boolean is pyramid
+       reference:
+         type: string
+         example: 'RPS MADRID'
+         description: Pgi Reference
+       title: 
+         type: string
+         example: "RAPPELS RED SALUD MADRID"
+         description: title Description
+       startDate:
+        type: string
+        format: date
+        description: Start Date
+        example: '27/07/2015'
+       endDate:
+        type: string
+        format: date
+        description: End Date
+        example: '27/07/2022'
+       totalPgi:
+        type: number
+        format: double
+        example: 4.500
+        description: Total PGI
+       balance:
+        type: number
+        format: double
+        example: 4.500
+        description: Balance PGI
+       statusPgi:
+         type: array
+         items: 
+            $ref: '#/components/schemas/statusPgiEnum'
+    PGIDetails:  
+      type: object
+      properties: 
+       conceptId:
+         type: string
+         description: Concept Identifier (code)
+         example: "1"
+       conceptName:
+         type: string
+         description: Concept Name
+         example: "RAPPELS"
+       channelId:
+         type: string
+         description: Channel Identifier (code)
+         example: "1"
+       channelName:
+         type: string
+         description: Channel Name
+         example: "Web"
+       isPyramid:
+         type: boolean
+         description: Boolean is pyramid
+       reference:
+         type: string
+         example: 'RPS MADRID'
+         description: Pgi Reference
+       title: 
+         type: string
+         example: "RAPPELS RED SALUD MADRID"
+         description: title Description
+       startDate:
+        type: string
+        format: date
+        description: Start Date
+        example: '27/07/2015'
+       endDate:
+        type: string
+        format: date
+        description: End Date
+        example: '27/07/2022'
+       totalPgi:
+        type: number
+        format: double
+        example: 4.500
+        description: Total PGI
+       balance:
+        type: number
+        format: double
+        example: 4.500
+        description: Balance PGI
+       statusPgi:
+        description: Status PGI
+        type: string
+        enum:
+         - ABIERTAS
+         - EN PROCESO
+         - CONFIRMADAS
+         - CERRADAS
+         - PENDIENTE DE FIRMA
+        example: 'PENDIENTE DE FIRMA' 
+    Supplier:
+      type: object
+      properties: 
+       cif:
+         type: string
+         example: 'A410001371'
+         description: Identity Fiscal Number
+       supplierName: 
+         type: string
+         example: "ALL FUNDS BANK SA"
+         description: Supplier' name
+    SupplierDetail:
+      type: object
+      properties: 
+       cif:
+         type: string
+         example: 'A410001371'
+         description: Identity Fiscal Number
+       antiquity:
+         type: number
+         description: Supplier Antiquity
+         example: 10
+       totalPol: 
+         type: number
+         example: 78
+         description: Total Pol
+       branch:
+         type: string
+         example: 'Multi Riesgo'
+         description: Branch
+       totalPremium:
+         type: number
+         format: double
+         example: 25000
+       technicalMargin:
+         type: number
+         format: double
+         example: 25000
+       observations:
+         type: string
+         example: 'A410001371'
+         description: Observations about suppliers 
+       customerComDate:
+         type: string
+         format: date (DD/MM/AAAA)
+         example: "06/07/2020"
+         description: Customer Communication Date
+       phoneNumber:
+         type: string
+         description: Phone Number
+         example: "69786543"
+       email:
+         type: string
+         description: email
+         example: juan@gmail.com
+       contactName:
+           type: string
+           description: Contact Name
+           example: 'SONIA PEREZ'
+    Applicant:
+     type: object
+     properties: 
+       applicantId:
+         type: string
+         example: 'EMMA001'
+         description: Unique applicant Identifier
+       name: 
+         type: string
+         example: "ALFARO ALMEIA"
+         description: Applicant Name
+    Annuncement:
+      type: object
+      properties:
+        bills:
+          type: number
+          example: 27
+        expenseSheeps:
+          type: number
+          example: 117
+        expenseVouchers:
+           type: number
+           example: 27
+    OperationTr:    
+      type: object
+      properties:
+        accountindDate:
+          type: string
+          format: date
+          example: '27/02/2022'
+          description: Accounting Date in format dd/mm/aaaa
+        operation:
+          type: string
+          description:  Type of operation. It can be "APPROVED", "INTERVENED" among others.
+          example: "EN PROCESO"
+        responsibleName:
+           type: string
+           description: Responsible Name
+           example: "MONICA JUAREZ"
+        motive:
+           type: string
+           description: Description of the reason for operation
+           example: "APROBACION MASIVA"
+    CommentPGIResponse:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+          example: '27/02/2022 08:09:22'
+          description: Comment Date in format dd/mm/aaaa
+        user:
+          type: string
+          description:  user who commented
+          example: "ANTONIO FERNANDEZ"
+        comment:
+           type: string
+           description: Comment
+           example: "this is a comment"
+    PGICommercialRequestGET:
+     type: object
+     description: Json to Request Details PGI
+     properties:
+      reference: 
+        type: string
+        description: PGI Reference ( This a unique)
+        maxLength: 10
+        example: 'RPS MADRID'
+      title: 
+       type: string
+       example: "RAPPELS RED SALUD MADRID"
+       description: title Description
+      pgiStatus:
+        description: Status PGI
+        type: string
+        enum:
+         - ABIERTAS
+         - EN PROCESO
+         - CONFIRMADAS
+         - CERRADAS
+         - PENDIENTE DE FIRMA
+        example: 'ABIERTAS'
+      companyId:
+         type: string
+         example: '0023'
+         description: Unique Company Identifier
+      accountId:
+         type: string
+         example: '10000000'
+         description: Unique Account Identifier
+      userId:
+        type: string
+        maxLength: 15
+        description: User Unique identifier
+        example: 'UISMBC' 
+      conceptId:
+        type: string
+        description: Concept Identifier (code)
+        example: "1"
+      startDateFrom:
+        type: string
+        format: date
+        description: Date from PGI , DD/MM/AAAA
+        example: '27/08/2020'
+      startDateTo:
+        type: string
+        format: date
+        description: Date to PGI , DD/MM/AAAA
+        example: '27/08/2020'
+      balanceFrom:
+        type: number
+        format: double
+        description: Balance from PGI
+        example: 20.30
+      balanceTo:
+        type: number
+        format: double
+        description: Balance to PGI
+        example: 25.30
+      endDateFrom:
+        type: string
+        format: date
+        description: Range Date from
+        example: '27/09/2020'
+      endDateTo:
+        type: string
+        format: date
+        description: Range Date to
+        example: '27/09/2020'
+      confirmDateFrom:
+        type: string
+        format: date
+        description: Range Date from
+        example: '27/09/2020'
+      confirmDateTo:
+        type: string
+        format: date
+        description: Range Date to
+        example: '27/09/2020'
+      isPyramid:
+        type: boolean
+        description: Boolean is pyramid
+      isNegativeBalance:
+        type: boolean
+        description: is negative balance
+    PGIRequestGET:
+     type: object
+     description: Json to Request Details PGI
+     properties:
+      reference: 
+        type: string
+        description: PGI Reference ( This a unique)
+        maxLength: 10
+        example: 'RPS MADRID'
+      title: 
+       type: string
+       example: "RAPPELS RED SALUD MADRID"
+       description: title Description
+      pgiStatus:
+        description: Status PGI
+        type: string
+        enum:
+         - ABIERTAS
+         - EN PROCESO
+         - CONFIRMADAS
+         - CERRADAS
+         - PENDIENTE DE FIRMA
+        example: 'ABIERTAS'
+      companyId:
+         type: string
+         example: '0023'
+         description: Unique Company Identifier
+      accountId:
+         type: string
+         example: '10000000'
+         description: Unique Account Identifier
+      userId:
+        type: string
+        maxLength: 15
+        description: User Unique identifier
+        example: 'UISMBC' 
+      startDateFrom:
+        type: string
+        format: date
+        description: Date from PGI , DD/MM/AAAA
+        example: '27/08/2020'
+      startDateTo:
+        type: string
+        format: date
+        description: Date to PGI , DD/MM/AAAA
+        example: '27/08/2020'
+      balanceFrom:
+        type: number
+        format: double
+        description: Balance from PGI
+        example: 20.30
+      balanceTo:
+        type: number
+        format: double
+        description: Balance to PGI
+        example: 25.30
+      endDateFrom:
+        type: string
+        format: date
+        description: Range Date from
+        example: '27/09/2020'
+      endDateTo:
+        type: string
+        format: date
+        description: Range Date to
+        example: '27/09/2020'
+      confirmDateFrom:
+        type: string
+        format: date
+        description: Range Date from
+        example: '27/09/2020'
+      confirmDateTo:
+        type: string
+        format: date
+        description: Range Date to
+        example: '27/09/2020'
+      isPyramid:
+        type: boolean
+        description: Boolean is pyramid
+      isNegativeBalance:
+        type: boolean
+        description: is negative balance
+    CompaniesChannels:
+     type: object
+     description: Response Channels by Company
+     properties:
+      companyId:
+        type: string
+        maxLength: 4
+        description: Company Identifier
+        example: "0001"
+      channelId: 
+        type: string
+        maxLength: 10
+        description: Channel Identifier
+        example: "AG"
+      name:
+        type: string
+        description: Channel Name
+        example: "AGENTES Y CORREDORES"
+    CompanyChannel:   
+     type: object
+     description: Request Channels by Company
+     required:
+       - compnyId
+       - channelId
+     properties:
+       companyId:
+        type: string
+        maxLength: 4
+        description: Company Identifier
+        example: "0001"
+       channelId: 
+        type: string
+        maxLength: 10
+        description: Channel Identifier
+        example: "AG"
+    Tax:
+     type: object
+     description: Response Tax types
+     properties:
+       taxTypeId:
+         type: string
+         description: Identifier tax
+         example: "SI"
+       name:
+         type: string
+         description: tax description
+         example: "IVA Soportado Deducible"
+       coment:
+         type: string
+         description: coment description
+         example: "Todas las provincias (incluidas 51 y 52) salvo 35 y 38"         
+       status:
+         type: string
+         enum: ["ACTIVE","INACTIVE"]
+         description: Indicate if tax is active or not.
+         example: "ACTIVE"                      
+    IRPFRP:
+     type: object
+     description: Response IRPF types
+     properties:
+       irpfTypeId:
+         type: string
+         description: Identifier IRPF
+         example: "01"
+       name: 
+         type: string
+         description: Description IRPF
+         example: "IRPF SOBRE PROFESIONALES 7%"
+       irpfType:
+         type: string
+         description: irpf type
+         maxLength: 2
+         example: "03"          
+       percentage: 
+         type: number
+         description: Applied percentage
+         example: 7
+       percKey:
+         type: string
+         description: Perc Key
+         example: "G"
+       subPercKey:
+         type: string
+         description: Sub Perc Key
+         example: "01"
+       status:
+         type: string
+         enum: ["ACTIVE","INACTIVE"]
+         description: Indicate if IRPF is active or not.
+         example: "ACTIVE"
+    IRPF:
+     type: object
+     description: Json IRPF request, to create a IRPF type
+     required:
+      - name
+      - percentage
+      - irpfType
+     properties:
+       irpfTypeId: 
+        type: string
+        maxLength: 2
+        example: "02"
+        description: IRPF Identifier
+       name: 
+         type: string
+         description: Description IRPF type
+         example: "IMPUESTO PROFESIONALES 7%"
+       percentage:
+         type: number
+         format: double
+         example: 17.5
+         maximum: 99.99
+       irpfType:
+         type: string
+         description: irpf type
+         maxLength: 2
+         example: "03"         
+       percKey:
+         type: string
+         description: Perc Key
+         maxLength: 2
+         example: "G"
+       subPercKey:
+        type: string
+        maxLength: 2
+        description: Sub Perc Key
+        example: "01"
+    IRPFUpdate:  
+     type: object
+     description: Json IRPF request, to create a IRPF type
+     required:
+      - name
+      - percentage
+     properties:
+       name: 
+         type: string
+         description: Description IRPF type
+         example: "IMPUESTO PROFESIONALES 7%"
+       irpfType:
+         type: string
+         description: irpf type
+         maxLength: 2
+         example: "03"           
+       percentage:
+         type: number
+         format: double
+         example: 17.5
+         maximum: 99.99
+       percKey:
+         type: string
+         description: Perc Key
+         maxLength: 2
+         example: "G"
+       subPercKey:
+        type: string
+        description: Sub Perc Key
+        maxLength: 2
+        example: "01"
+       status:
+         type: string
+         enum: ["ACTIVE","INACTIVE"]
+         description: Indicate if IRPF is active or not.
+         example: "ACTIVE"        
+    Setting:
+     type: object
+     description: Response to Settings apllication
+     properties:
+       keyId:
+         type: string
+         description: Setting identifier
+         example: 'CORREO_CLI'
+       value:
+         type: string
+         description: Setting identifier
+         example: 'janton@gmail.com'
+       description:
+         type: string
+         description: Setting identifier
+         example: 'Dirección de correo para envio de mensajes de avisos'
+    AuxiliaryDetail:
+     type: object
+     description: Response for Auxiliaries Details
+     properties:
+       companyId:
+        type: string
+        maxLength: 4
+        description: Company Identifier
+        example: "0001"
+       auxiliaryId:
+         type: string
+         example: '123'
+         description: Auxiliary Identifier
+       name: 
+         type: string
+         example: "AGENTE GENERICO"
+         description: Auxiliary Name
+       parentId:
+        type: string
+        description: parent Identifier
+        example: "0004"
+       endDate:
+        type: string
+        format: date 
+        description: End Date
+        example: "27/07/2018"
+       departments:
+        type: array
+        items:
+            $ref: '#/components/schemas/DepartmentLite'
+    AuxiliaryRQ:
+     type: object
+     description: Request for Auxiliaries Post
+     properties:
+       companyId:
+        type: string
+        maxLength: 4
+        description: Company Identifier
+        example: "0001"
+       name: 
+         type: string
+         example: "AGENTE GENERICO"
+         description: Auxiliary Name
+       parentId:
+        type: string
+        description: parent Identifier
+        example: "0004"
+       auxiliaryId:
+        type: string
+        description: Auxiliary Id
+        example: "0000000001"
+    AuxiliaryRQUpdate:
+     type: object
+     description: Request for Auxiliaries Update
+     properties:
+       companyId:
+        type: string
+        maxLength: 4
+        description: Company Identifier
+        example: "0001"
+       name: 
+         type: string
+         example: "AGENTE GENERICO"
+         description: Auxiliary Name
+       parentId:
+        type: string
+        description: parent Identifier
+        example: "0004"
+    VATType:
+     type: object
+     description: Response to VAT Taxes
+     properties:
+       vatTypeId:
+         type: string
+         description: Identifier VAT
+         example: "AD"
+       description: 
+         type: string
+         description: Description VAT
+         example: "IVA SOPORTADO DEDUCTIBLE 4%"
+       percentage: 
+         type: number
+         description: Applied percentage
+         example: 7
+       deductible:
+         type: string
+         enum: ["DEDUCTIBLE", "NODEDUCTIBLE"]
+         description: Indicate if is deductible or not
+         example: "DEDUCTIBLE"
+       taxType:
+         type: string
+         description: Tax Type
+         example: "II- IVA AUTOREPERCUTIDO"
+       status:
+         type: string
+         enum: ["ACTIVE","INACTIVE"]
+         description: Indicate if IRPF is active or not.
+         example: "ACTIVE"
+       supplierName:
+        type: string
+        description: Supplier Description
+        example: "ALL FUNDS BANK SA"  
+       typeName: 
+         type: string
+         enum: ["IVA", "IGIC"]
+         description: Description type
+         default: "IVA"
+         example: "IVA"               
+    VAT:
+      type: object
+      description: Json VAT request, to create a VAT type
+      required:
+        - vatTypeId
+        - percentage
+        - description
+        - taxType
+        - supplierName
+      properties:
+         vatTypeId: 
+          type: string
+          maxLength: 2
+          example: "02"
+          description: VAT Identifier
+         typeName: 
+           type: string
+           enum: ["IVA", "IGIC"]
+           description: Description type
+           default: "IVA"
+           example: "IVA"
+         description:
+          type: string
+          description: Tax Description
+          example: "IVA SOPORTADO"
+         percentage:
+           type: number
+           format: double
+           example: 17.5
+         taxType:
+           type: string
+           description: TAX TYPE
+           default: "SL – IGI SOPORTADO ANDORRA NO DEDUCIBLE"
+           example: "SL – IGI SOPORTADO ANDORRA NO DEDUCIBLE"
+         supplierName:
+          type: string
+          description: Supplier Description
+          example: "ALL FUNDS BANK SA"
+         deductible:
+           type: string
+           enum: ["DEDUCTIBLE", "NODEDUCTIBLE"]
+           description: Indicate if is deductible or not
+           example: "DEDUCTIBLE"         
+    VATUpdate:
+      type: object
+      description: Json VAT request, to update a VAT type
+      required:
+        - percentage
+        - description
+        - taxType
+        - supplierName
+      properties:
+         typeName: 
+           type: string
+           enum: ["IVA", "IGIC"]
+           description: Description type
+           default: "IVA"
+           example: "IVA"
+         description:
+          type: string
+          description: Tax Description
+          example: "IVA SOPORTADO"
+         percentage:
+           type: number
+           format: double
+           example: 17.5
+         taxType:
+           type: string
+           description: TAX TYPE
+           default: "SL – IGI SOPORTADO ANDORRA NO DEDUCIBLE"
+           example: "SL – IGI SOPORTADO ANDORRA NO DEDUCIBLE"
+         supplierName:
+          type: string
+          description: Supplier Description
+          example: "ALL FUNDS BANK SA"
+         deductible:
+           type: string
+           enum: ["DEDUCTIBLE", "NODEDUCTIBLE"]
+           description: Indicate if is deductible or not
+           example: "DEDUCTIBLE"
+         status:
+           type: string
+           enum: ["ACTIVE","INACTIVE"]
+           description: Indicate if IRPF is active or not.
+           example: "ACTIVE"           
+    Ulob:
+      type: object
+      properties:
+       ulobName:
+         type: string
+         description: ULOB
+         example: "NOSE"
+    Budgets:
+      type: object
+      description: Budgets
+      properties:
+        budgetId:
+          type: string
+          example: "2342"
+          description: Budget Identifier
+        lineNumber:
+          type: string
+          description: line Number
+          example: "2"
+        error:
+          type: string
+          description: Error budget
+          example: " NO SE HA PODIDO CARGAR"
+    Budget-maintence:
+     type: object
+     properties:
+       companyId:
+         type: string
+         example: '0023'
+         description: Unique Company Identifier
+       accountId:
+         type: string
+         example: '10000000'
+         description: Unique Account Identifier
+       auxiliaryId:
+         type: string
+         example: '123'
+         description: Auxiliary Identifier
+       budgetConcept:
+        type: string
+        description: Budget Concept
+        example: 'Reparac. y Conserv. Edificios'
+       amount: 
+        type: number
+        format: double
+        description: Amount
+        example: 200.34
+       budgetId:
+        description: budget Identifier
+        type: string
+        example: "23432"
+       balance:
+         type: number
+         format: double
+         description: Balance
+         example: 234.34
+    Signatures:
+     type: object
+     properties:
+      pgiId: 
+       type: string
+       description: pgi Identifier
+       example: "234"
+      orderNumber:
+        description: Order Number Signature
+        type: number
+        example: 1
+      departmentId:
+        description: Department Identifier
+        type: string
+        example: '6204'
+      userId:
+        description: User Unique identifier
+        type: string
+        example: 'UISMBC'
+      limit:
+         type: number
+         format: double
+         description: Limit about concept
+         example: 908.7
+      signatureDate:
+        type: string
+        format: date
+        description: Signature Date (DD/MM/AAAA)
+        example: "25/07/2022"
+         
+      aditionalUser:
+        description: User Aditional identifier
+        type: string
+        example: 'UUUUUU'
+    Substitutes:
+     type: object
+     description: Substitutes Responsibles
+     properties:
+       departmentId:
+          description: Department Identifier
+          type: string
+          example: '6204'
+       userId:
+          description: User Unique identifier
+          type: string
+          example: 'UISMBC'
+       effectDate:
+          type: string
+          format: date
+          description: Efect Date Limit (DD/MM/AAAA)
+          example: '22/09/2022'
+       limit:
+         type: number
+         format: double
+         description: Limit about concept
+         example: 908.7
+       delegateId:
+          type: string
+          description: Delegate
+          example: '1'
+    Permission:
+      type: object
+      properties:
+        roleId:
+          type: string
+          description: Role unique Identifier
+          example: "TEST"
+        actionId:
+          type: string
+          description: Action
+          example: INTERVENCION
+        companyId:
+         type: string
+         example: '0001'
+        departmentId:
+          description: Department Identifier (code)
+          type: string
+          example: '0001'
+        pyramidId:
+           type: string
+           enum: ["P", "F"]
+           description: Indicate if P (PPM), if value is F (Bills) 
+        dateFrom:
+          type: string
+          format: date
+          description: Date from PGI , DD/MM/AAAA
+          example: '27/08/2020'
+        dateTo:
+          type: string
+          format: date
+          description: Date to PGI , DD/MM/AAAA
+          example: '27/08/2020'
+    Meta4Response:
+      type: object
+      description: PPMs response
+      properties:
+        departmentId: 
+          type: string
+          description: Department identifier.
+          maxLength: 32
+          example: 'C00012'
+        departmentName: 
+          type: string
+          description: Department name. 
+          example: "TRANSFORMACIÓN DIGITAL"
+        responsibleId: 
+          type: string
+          description: Responsible identifier. 
+          example: "11028L"
+        responsibleName: 
+          type: string
+          description: Responsible name. 
+          example: "MIGUEL TROTEAGA"
+    PPMsRQ:
+     type: object
+     description: PPMS Body
+     properties:
+       reference:
+          type: string
+          description: PGI Reference ( This a unique)
+          maxLength: 10
+          example: 'RPS MADRID'
+       companyId:
+          type: string
+          maxLength: 4
+          description: Company Identifier
+          example: "0001"
+       accountingDate:
+          description: Accounting Date 
+          type: string
+          format: date
+          example: "25/01/2011"
+       sica:
+         type: string
+         example: "1234"
+         description: Sica's Identifier
+       mediatorId: 
+         type: string
+         example: "8407"
+         description: Mediator's Identifier
+       currency:
+        type: string
+        description: Currency Type
+        example: "EUR"
+       paymentMethod:
+         description: Payment Method 
+         type: string
+         example: "CUENTA AGENTE"
+       concept:
+         type: array
+         description: Concept PPMs
+         items:
+           $ref: '#/components/schemas/ConceptPPMs'
+    ConceptPPMs:
+      type: object
+      properties:
+         concept:
+           type: string
+           description: Concept
+           example: "PAGO"
+         taxBase:
+           type: string
+           description: Tax Base
+           example: "23"
+         retentionRate:
+           type: number
+           description: Percentaje Retention
+           example: 20   
+         retentionAmount:
+          type: number
+          format: double
+          example: 25
+         netAmount:
+          type: number
+          format: double
+          example: 24
+         onlineBookkeeping:
+          type: object
+          properties:
+            accountId:
+              type: string
+              example: '10000000'
+              description: Unique Account Identifier     
+            auxiliaryId:
+              type: string
+              example: '123'
+              description: Auxiliary Identifier
+            channelId:
+              type: string
+              example: 'RS'
+              description: Channel Identifier
+    PPMsRQFilter:
+     type: object
+     properties:
+       reference:
+          type: string
+          description: PGI Reference ( This a unique)
+          maxLength: 10
+          example: 'RPS MADRID'
+       companyId:
+          type: string
+          maxLength: 4
+          description: Company Identifier
+          example: "0001"
+       documentReference:
+          description: DocumentReference 
+          type: string
+          example: "07"
+       paymentStatus:
+         type: string
+         enum: ["ABIERTA","PAGADA", "EN PROCESO", "REVISADA","RECHAZADA","CONTABILIZADA"]
+         description: Status Payment
+         example: "PAGADA"
+       ppmId:
+         type: string
+         description: Identifier
+         example: "10"
+       dateFrom:
+        type: string
+        format: date
+        description: Date from PPMs , DD/MM/AAAA
+        example: '27/08/2020'
+       dateTo:
+        type: string
+        format: date
+        description: Date to PPMs , DD/MM/AAAA
+        example: '27/08/2020'
+       totalDateFrom:
+        type: string
+        format: date
+        description: Total Date from PPMs , DD/MM/AAAA
+        example: '27/08/2020'
+       totalDateTo:
+        type: string
+        format: date
+        description: Total Date to PPMs , DD/MM/AAAA
+        example: '27/08/2020'
+       channelId:
+          type: string
+          example: 'RS'
+          description: Channel Identifier
+       sica:
+         type: string
+         example: "1234"
+         description: Sica's Identifier
+       mediatorId: 
+         type: string
+         example: "8407"
+         description: Mediator's Identifier
+       paymentMethod:
+         description: Payment Method 
+         type: string
+         example: "CUENTA AGENTE"  
+    PPMRESP:
+     type: object
+     description: PPMs response
+     properties:
+       ppmId:
+         type: string
+         description: Identifier
+         example: "10"
+       companyId:
+          type: string
+          maxLength: 4
+          description: Company Identifier
+          example: "0001"
+       accountingDate:
+        type: string
+        format: date
+        description: Date from PPMs , DD/MM/AAAA
+        example: '27/08/2020'
+       reference:
+          type: string
+          description: PGI Reference ( This a unique)
+          maxLength: 10
+          example: 'RPS MADRID'
+       mediatorId: 
+         type: string
+         example: "8407"
+         description: Mediator's Identifier
+       total:
+        type: number
+        format: double
+        description: Total 
+        example: 356
+       lastOperation:
+          description: Last Operation 
+          type: string
+          example: "PAGADA"
+       currentMailbox:
+         description: Current Mail Box
+         example: "No se"
+       paymentMethod:
+         description: Payment Method 
+         type: string
+         example: "CUENTA AGENTE" 
+       paymentStatus:
+         type: string
+         enum: ["ABIERTA","PAGADA", "EN PROCESO", "REVISADA","RECHAZADA","CONTABILIZADA"]
+         description: Status Payment
+         example: "PAGADA"
+     
+    ErrorData:
+      title: ErrorData
+      description: A Json object containing the error data
+      required:
+        - errorCode
+        - errorMessage
+      type: object
+      properties:
+        errorCode:
+          description: Code associated with the error
+          type: string
+          example: MOPE401
+        errorMessage:
+          description: Error description
+          type: string
+          example: ' No data found'
+  requestBodies:
+    UserRequest:
+      description: A JSON object containing User information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    UserUpdateRequest:
+      description: A JSON object containing User information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserUpdate'
+    RolRequest:
+      description: A JSON object containing Role information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RoleRequest'
+    RoleUpdateRequest:
+      description: A JSON object containing Role Update information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateRole'
+    Status:
+      description: A JSON object containing Role Status information
+      required: true
+      content:
+        application/json:
+          schema:
+           properties:
+             status:
+              type: string
+              enum: ["ACTIVE", "INACTIVE"]
+              description: Activate or desactivate User
+    StatusRQAuxiliaryPatch:
+      description: A JSON object containing Auxiliary Status information
+      required: true
+      content:
+        application/json:
+          schema:
+           properties:
+             status:
+              type: string
+              enum: ["ACTIVE", "INACTIVE"]
+              description: Activate or desactivate Auxiliary  
+             companyId:
+               type: string
+               example: '0001'  
+    DepartmentRequest:
+      description: A JSON object containing Departments information
+      required: true
+      content:
+        application/json:
+          schema:
+             $ref: '#/components/schemas/Department'               
+    DepartmentUpdateRequest:
+      description: A JSON object containing Departments information
+      required: true
+      content:
+        application/json:
+          schema:
+             $ref: '#/components/schemas/DepartmentUpdateRQ'
+    DepartmentCompanyRQ:
+      description: A JSON object containing Departments Company information
+      required: true
+      content:
+        application/json:
+          schema:
+             $ref: '#/components/schemas/DepartmentCompanyRQ'
+    CompanyRQ:
+      description: A JSON object containing company information
+      required: true
+      content:
+        application/json:
+          schema:
+             $ref: '#/components/schemas/CompanyRQUpdate'
+    CommentPGI:
+      description: A JSON object containing Comment information
+      required: true
+      content:
+        application/json:
+          schema:
+           properties:
+             reference: 
+               type: string
+               description: PGI Reference ( This a unique)
+               maxLength: 10
+               example: 'RPS MADRID'
+             comment: 
+               type: string
+               description: PGI Comment 
+               example: "This is a comment"
+    PGICommercialdetails:
+      description: A JSON object containing PGI information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PGICommercialRequestGET'
+    PGIdetails:
+      description: A JSON object containing PGI information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PGIRequestGET'
+    AccountRQDetail:
+      description: A JSON object containing Account information
+      required: true
+      content:
+        application/json:
+          schema:
+             $ref: '#/components/schemas/AccountDetails'
+    ChannelsComapnyRQ: 
+      description: A JSON object containing Company Channel information
+      required: true
+      content:
+        application/json:
+          schema:
+             $ref: '#/components/schemas/CompanyChannel'
+    IRPFRQ:
+      description: A JSON object containing IRPF information
+      required: true
+      content:
+        application/json:
+          schema:
+             $ref: '#/components/schemas/IRPF'
+    VATRQ:
+      description: A JSON object containing VAT information
+      required: true
+      content:
+        application/json:
+          schema:
+             $ref: '#/components/schemas/VAT'
+    VATRQUpdate:
+      description: A JSON object containing VAT information
+      required: true
+      content:
+        application/json:
+          schema:
+           $ref: '#/components/schemas/VATUpdate'
+    IRPFRQUpdate:
+      description: A JSON object containing IRPF information
+      required: true
+      content:
+        application/json:
+          schema:
+           $ref: '#/components/schemas/IRPFUpdate'
+    Setting:
+      description: A JSON object containing Setting Update information
+      required: true
+      content:
+        application/json:
+          schema:
+           properties:
+             value:
+               type: string
+               description: Setting identifier
+               example: 'janton@gmail.com'
+             description:
+               type: string
+               description: Setting identifier
+               example: 'Dirección de correo para envio de mensajes de avisos'
+    PyramidsCopy:
+      description: A JSON object containing Pyramids Copy information by Company
+      required: true
+      content:
+        application/json:
+          schema:
+           properties:
+             companyId:
+               type: string
+               description: Company where the pyramid will be copied
+               example: '0004'
+    PPMs:
+      description: A JSON object containing PPMs (Proposal Payment) information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PPMsRQ'
+    PPMsRQ:
+      description: A JSON object containing PPMs (Proposal Payment) information Filters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PPMsRQFilter'
+    AuxiliaryRQ:
+      description: A JSON object containing Auxiliary information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuxiliaryRQ'
+    AuxiliaryRQUpdate:
+      description: A JSON object containing Auxiliary information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuxiliaryRQUpdate'                 
+  parameters:
+    UserId:
+      in: path
+      name: userId
+      description: User Unique identifier
+      schema:
+        type: string
+        example: 'UISMBC'
+      required: true
+  securitySchemes:
+    Authentication:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
